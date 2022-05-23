@@ -9,5 +9,6 @@ export default {
 
         db.once('open', () => console.log('Connected to MongoDB'));
         db.on('error', (err) => console.error(err));
+        mongoose.set('debug', false);
     }
 }

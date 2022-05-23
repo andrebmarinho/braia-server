@@ -17,9 +17,18 @@ const Remedy = new mongoose.Schema({
     frequency: {
         type: Number,
         required: true
+    },
+    startDate: {
+        type: Date,
+        required: true
+    },
+    endDate: {
+        type: Date,
+        required: true
     }
 });
 
+// Period in days
 // Frequency: how many times per day
 
 export default mongoose.model('Remedy', Remedy);

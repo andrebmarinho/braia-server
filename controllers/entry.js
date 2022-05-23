@@ -66,6 +66,7 @@ export default class EntryController {
     }
 
     static async edit(req, res, next) {
+        console.info('Entries | POST');
 
         if (!req.body) {
             return res.status(400).send({

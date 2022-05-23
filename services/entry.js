@@ -18,9 +18,10 @@ export default class EntryService {
             let entries = [];
             
             if (!id) {
-                entries = await Entry.find(query, null, limit ? { skip, limit } : {}).sort('dateTime description');
+                entries = await Entry.find(query, null, limit ? { skip, limit } : {}).sort('dateTime description')
+                    .populate('event').exec();
             } else {
-                entries = await Entry.findById(id);
+                entries = await Entry.findById(id).populate('event').exec();
             }
 
             return entries;
@@ -30,9 +31,9 @@ export default class EntryService {
         }
     }
 
-    static async create(event) {
+    static async create(entry) {
         try {
-            const newEntry = await event.save();
+            const newEntry = await entry.save();
             return newEntry;
         } catch (err) {
             console.log('EntryService Error - Create');
@@ -40,9 +41,9 @@ export default class EntryService {
         }
     }
 
-    static async edit(id, event) {
+    static async edit(id, entry) {
         try {
-            const newEntry = await Entry.findByIdAndUpdate(id, event, {new: true});
+            const newEntry = await Entry.findByIdAndUpdate(id, entry, {new: true});
             
             if (!newEntry) {
                 console.log('EntryService Error - Edit');
@@ -58,9 +59,9 @@ export default class EntryService {
 
     static async remove(id) {
         try {
-            const event = await Entry.findByIdAndRemove(id);
+            const entry = await Entry.findByIdAndRemove(id);
             
-            if (!event) {
+            if (!entry) {
                 console.log('EntryService Error - Delete');
                 throw Error(`Cannot delete Entry with id=${id}. Maybe this Entry was not found!`)
             }

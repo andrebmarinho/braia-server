@@ -1,5 +1,6 @@
 import Service from '../services/remedy.js';
 import Remedy from '../models/remedy.js';
+import moment from 'moment';
 
 export default class RemedyController {
     static async find(req, res, next) {
@@ -10,6 +11,9 @@ export default class RemedyController {
         const dosage = req.query.dosage;
         const unit = req.query.unit;
         const frequency = req.query.frequency;
+        const startDate = req.query.startDate;
+        const endDate = req.query.endDate;
+        const date = req.query.date ? new Date(req.query.date) : null;
 
         let query = name ? 
             { name: { $regex: new RegExp(name), $options: 'i' } } : {};
@@ -24,6 +28,21 @@ export default class RemedyController {
 
         if (frequency) {
             query.frequency = frequency;
+        }
+
+        if (startDate) {
+            query.startDate = startDate;
+        }
+
+        if (endDate) {
+            query.endDate = endDate;
+        }
+
+        if (date) {
+            const sd = moment(date).endOf('day');
+            const ed = moment(date).startOf('day');
+            query.startDate = { $lte: sd };
+            query.endDate = { $gte: ed };
         }
 
         const id = req.params.id;
@@ -50,6 +69,15 @@ export default class RemedyController {
 
     static async create(req, res, next) {
         console.info('Remedies | POST');
+        const startDate = new Date(req.body.startDate);
+        const endDate = new Date(req.body.endDate);
+
+        startDate.setHours(0);
+        startDate.setMinutes(0);
+        startDate.setSeconds(0);
+        endDate.setHours(0);
+        endDate.setMinutes(0);
+        endDate.setSeconds(0);
 
         const newRemedy = new Remedy(
             {
@@ -57,6 +85,8 @@ export default class RemedyController {
                 dosage: req.body.dosage,
                 unit: req.body.unit,
                 frequency: req.body.frequency,
+                startDate: startDate,
+                endDate: endDate
             }
         );
 
@@ -77,6 +107,7 @@ export default class RemedyController {
     }
 
     static async edit(req, res, next) {
+        console.info('Remedies | POST');
 
         if (!req.body) {
             return res.status(400).send({
